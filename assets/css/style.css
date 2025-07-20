@@ -13,6 +13,8 @@
     --text-color-secondary: #666666; /* Texto secundário/descrições */
     --border-color: #DDDDDD; /* Bordas e separadores */
     --shadow-color: rgba(0,0,0,0.1); /* Sombra padrão */
+    --white: #FFFFFF; /* Cor branca para texto em fundos escuros */
+
 
     /* Tipografia */
     --font-heading: 'Montserrat', sans-serif;
@@ -125,12 +127,12 @@ a:hover {
 
 .btn-primary:hover {
     background-color: #388E3C; /* Valor fixo para hover no modo claro */
-    /* No dark mode, podemos usar uma cor customizada para hover */
-    body.dark-mode & { /* Isto é SASS, não CSS puro. Para CSS puro, duplique a regra. */
-        background-color: #559959;
-    }
     transform: translateY(-2px);
 }
+body.dark-mode .btn-primary:hover { /* Override para dark mode */
+    background-color: #559959;
+}
+
 
 .btn-secondary {
     background-color: var(--secondary-color); /* Usa variável */
@@ -140,10 +142,10 @@ a:hover {
 
 .btn-secondary:hover {
     background-color: #1976D2; /* Valor fixo para hover no modo claro */
-    body.dark-mode & { /* Isto é SASS, não CSS puro. Para CSS puro, duplique a regra. */
-        background-color: #5090C8;
-    }
     transform: translateY(-2px);
+}
+body.dark-mode .btn-secondary:hover { /* Override para dark mode */
+    background-color: #5090C8;
 }
 
 .btn-small {
@@ -155,20 +157,10 @@ a:hover {
 
 .btn-small:hover {
     background-color: #444444; /* Valor fixo para hover no modo claro */
-    body.dark-mode & { /* Isto é SASS, não CSS puro. Para CSS puro, duplique a regra. */
-        background-color: var(--text-color-secondary);
-    }
 }
-
-/* Correção para hover dos botões em CSS puro (substitua os blocos `body.dark-mode &`) */
-.btn-primary:hover { background-color: #388E3C; transform: translateY(-2px); }
-body.dark-mode .btn-primary:hover { background-color: #559959; }
-
-.btn-secondary:hover { background-color: #1976D2; transform: translateY(-2px); }
-body.dark-mode .btn-secondary:hover { background-color: #5090C8; }
-
-.btn-small:hover { background-color: #444444; }
-body.dark-mode .btn-small:hover { background-color: #666666; /* Ou outra cor escura para hover */ }
+body.dark-mode .btn-small:hover { /* Override para dark mode */
+    background-color: #666666;
+}
 
 
 /* --- Header --- */
@@ -198,7 +190,7 @@ header .logo {
 
 header nav ul {
     list-style: none;
-    display: flex;
+    display: flex; /* Garante que em desktop o menu esteja sempre flex (visível) */
 }
 
 header nav ul li {
@@ -253,7 +245,7 @@ header nav ul li a.active::after {
 
 
 .menu-toggle {
-    display: none; /* Escondido por padrão em telas maiores */
+    display: none; /* Escondido por padrão em telas maiores - será mostrado apenas em mobile */
     background: transparent;
     border: none;
     cursor: pointer;
@@ -297,11 +289,6 @@ header nav ul li a.active::after {
     min-height: 40vh;
     padding: 60px 0;
 }
-
-/* Você vai definir o background-image para cada `project-page-hero` *no HTML* usando o atributo `style`,
-   já que cada um terá uma imagem diferente. */
-/* Ex: <section id="project-hero" class="hero project-page-hero" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../assets/images/project-banner-01.jpg');"> */
-
 
 .hero h1 {
     font-size: 4em;
@@ -378,19 +365,6 @@ header nav ul li a.active::after {
 .project-card .btn-small {
     margin-bottom: 20px;
 }
-
-/* --- Utilitários de Espaçamento Adicionais --- */
-.spacer-top-medium {
-    margin-top: 40px; /* Um espaço médio, ajuste conforme a necessidade */
-}
-
-/* Ou se preferir um espaçamento maior */
-.spacer-top-large {
-    margin-top: 60px;
-}
-
-
-
 
 /* --- Timeline (Programação) --- */
 .timeline {
@@ -664,6 +638,10 @@ footer .container {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* --- Utilitários de Espaçamento Adicionais --- */
+.spacer-top-medium {
+    margin-top: 40px; /* Um espaço médio, ajuste conforme a necessidade */
+}
 
 /* --- Responsividade --- */
 @media (max-width: 992px) {
@@ -727,11 +705,18 @@ footer .container {
         order: 3;
         width: 100%;
         margin-top: 15px;
-        display: none;
+        display: none; /* Esconde a navegação em mobile por padrão */
+        position: absolute; /* Para que o menu expanda e cubra o conteúdo */
+        top: 100%; /* Abaixo do header */
+        left: 0;
+        background-color: var(--header-bg); /* Fundo do menu como o do header */
+        padding: 10px 0;
+        box-shadow: 0 5px 10px var(--shadow-color);
+        border-top: 1px solid var(--border-color); /* Uma linha para separar do header */
     }
 
     header nav.active {
-        display: block;
+        display: block; /* Mostra a navegação quando a classe 'active' está presente */
     }
 
     header nav ul {
@@ -743,6 +728,7 @@ footer .container {
         margin: 10px 0;
     }
 
+    /* O ajuste chave: Mostra o botão hambúrguer */
     .menu-toggle {
         display: block;
     }
@@ -752,7 +738,6 @@ footer .container {
         order: 2; /* Move o botão de tema para o lado do menu toggle */
         margin-left: auto; /* Empurra para a direita */
     }
-
 
     .hero {
         padding: 60px 0;
