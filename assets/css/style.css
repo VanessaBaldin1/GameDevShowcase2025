@@ -441,16 +441,15 @@ header nav ul li a.active::after {
 
 /* --- Map Container --- */
 .map-container {
-    margin-top: 30px;
+    margin: 30px auto; 
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 5px 15px var(--shadow-color); /* Usa variável */
+    box-shadow: 0 5px 15px var(--shadow-color);
     transition: box-shadow 0.3s ease;
+    max-width: 800px; /* ou outro valor desejado */
+    width: 100%;      /* garante que seja responsivo dentro do limite */
 }
 
-.map-container iframe {
-    border-radius: 10px;
-}
 
 /* --- Contact Form --- */
 .contact-form {
