@@ -452,56 +452,94 @@ header nav ul li a.active::after {
 
 
 /* --- Contact Form --- */
-.contact-form {
-    max-width: 600px;
-    margin: 30px auto 0;
-    background-color: var(--card-bg); /* Usa variável */
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px var(--shadow-color); /* Usa variável */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
+/* --- Seção Mural de Recados (Somente Front-end) --- */
+/* --- Ajustes para os campos do formulário --- */
 
+/* Garante que os grupos de formulário ocupem a largura total e tenham margem */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Espaçamento entre os grupos de campo */
+    width: 100%; /* Garante que o grupo ocupe a largura total disponível */
 }
 
+/* Estiliza o rótulo (label) */
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
+    display: block; /* Faz o rótulo ocupar uma linha inteira */
+    margin-bottom: 8px; /* Espaçamento entre o rótulo e o campo */
     font-weight: 600;
-    color: var(--text-color-primary); /* Usa variável */
+    color: var(--text-color-primary);
+    font-size: 0.95em;
 }
 
+/* Estiliza os campos de input e textarea */
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group textarea {
-    width: 100%;
+    width: 100%; /* Faz o campo preencher 100% da largura do seu container */
     padding: 12px;
-    border: 1px solid var(--border-color); /* Usa variável */
-    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--input-bg); /* Cor de fundo do campo */
+    color: var(--text-color-primary);
     font-size: 1em;
-    font-family: var(--font-body);
-    color: var(--text-color-primary); /* Texto do input */
-    background-color: var(--body-bg); /* Fundo do input */
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura total */
 }
 
-.form-group input:focus,
+/* Estilo de foco para os campos */
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
 .form-group textarea:focus {
-    border-color: var(--primary-color); /* Usa variável */
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-    outline: none;
+    border-color: var(--primary-color); /* Cor da borda ao focar */
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2); /* Sombra suave ao focar */
+    outline: none; /* Remove o contorno padrão do navegador */
 }
 
-.form-group textarea {
-    resize: vertical;
+/* Estilo para placeholder */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.7;
 }
 
-.contact-form button[type="submit"] {
-    width: 100%;
-    padding: 15px;
+/* Ajustes para o botão de enviar */
+.add-suggestion-form-container .btn-primary {
+    width: 100%; /* Faz o botão ocupar a largura total do formulário */
+    padding: 15px 20px;
     font-size: 1.1em;
+    margin-top: 10px; /* Espaçamento acima do botão */
+}
+
+/* --- Estilos para o botão de exclusão no Mural de Recados --- */
+
+.suggestion-card .suggestion-header {
+    display: flex;
+    justify-content: space-between; /* Alinha o nome à esquerda e o botão à direita */
+    align-items: center;
+    margin-bottom: 5px; /* Espaço entre o cabeçalho e o texto do recado */
+}
+
+.delete-suggestion-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-secondary); /* Cor inicial do ícone */
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%; /* Para um visual de botão redondo */
+    transition: color 0.2s ease, background-color 0.2s ease;
+    display: flex; /* Para centralizar o ícone */
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-suggestion-btn:hover {
+    color: var(--accent-color); /* Cor ao passar o mouse (ex: vermelho/laranja) */
+    background-color: rgba(var(--accent-color-rgb), 0.1); /* Um fundo suave ao passar o mouse */
+}
+
+/* Ajuste para o ícone do Font Awesome dentro do botão */
+.delete-suggestion-btn i {
+    pointer-events: none; /* Garante que o clique seja no botão, não no ícone */
 }
 
 /* --- Footer --- */
@@ -813,5 +851,34 @@ footer .container {
 
     .project-page-hero h1 {
         font-size: 1.8em;
+    }
+}
+/* --- Responsividade para o Mural de Recados --- */
+@media (max-width: 992px) {
+    .suggestions-display {
+        max-height: 400px; /* Ajuste a altura em telas menores */
+    }
+}
+
+@media (max-width: 768px) {
+    .suggestion-mural-wrapper {
+        flex-direction: column; /* Colunas empilhadas em mobile */
+        align-items: center;
+    }
+
+    .add-suggestion-form-container,
+    .suggestions-display {
+        width: 100%; /* Ocupa a largura total */
+        max-width: 500px; /* Limita a largura máxima em mobile para melhor leitura */
+        padding: 25px;
+    }
+
+    .add-suggestion-form-container {
+        order: 1; /* Coloca o formulário antes do display em mobile */
+    }
+
+    .suggestions-display {
+        order: 2; /* Coloca o display abaixo do formulário em mobile */
+        max-height: 350px; /* Ajuste a altura para telas muito pequenas */
     }
 }

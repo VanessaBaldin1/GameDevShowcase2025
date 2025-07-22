@@ -325,3 +325,126 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (Seu código existente para theme-toggle e menu-toggle, se houver) ...
+
+    const suggestionsList = document.getElementById('suggestions-list');
+    const addSuggestionForm = document.getElementById('add-suggestion-form');
+    const suggestionNameInput = document.getElementById('suggestion-name');
+    const suggestionTextInput = document.getElementById('suggestion-text');
+    const formStatusMessage = document.getElementById('form-status-message');
+
+    // Chave para armazenar no Local Storage
+    const LOCAL_STORAGE_KEY = 'pixelPioneersSuggestions';
+
+    // Função para carregar as sugestões do Local Storage
+    function loadSuggestionsFromLocalStorage() {
+        const storedSuggestions = localStorage.getItem(LOCAL_STORAGE_KEY);
+        try {
+            const parsedSuggestions = storedSuggestions ? JSON.parse(storedSuggestions) : [];
+            displaySuggestions(parsedSuggestions);
+        } catch (error) {
+            console.error('Erro ao carregar sugestões do Local Storage:', error);
+            suggestionsList.innerHTML = '<p class="loading-message error">Erro ao carregar seus recados locais.</p>';
+        }
+    }
+
+    // Função para exibir as sugestões no HTML
+    function displaySuggestions(suggestions) {
+        suggestionsList.innerHTML = ''; // Limpa a lista
+        if (suggestions.length === 0) {
+            suggestionsList.innerHTML = '<p class="loading-message">Nenhum recado ainda. Seja o primeiro a deixar um!</p>';
+            return;
+        }
+
+        // Exibe as sugestões mais recentes primeiro
+        suggestions.slice().reverse().forEach(sug => {
+            const suggestionCard = document.createElement('div');
+            suggestionCard.classList.add('suggestion-card');
+            
+            const name = sug.name || 'Anônimo';
+            const date = new Date(sug.timestamp).toLocaleString('pt-BR', { 
+                day: '2-digit', month: '2-digit', year: 'numeric', 
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            suggestionCard.innerHTML = `
+                <div class="suggestion-header">
+                    <span class="author-date"><strong>${name}</strong> em ${date}</span>
+                    <button class="delete-suggestion-btn" data-id="${sug.id}" title="Excluir este recado">
+                        <i class="fas fa-times"></i> </button>
+                </div>
+                <p>${sug.suggestion}</p>
+            `;
+            suggestionsList.appendChild(suggestionCard);
+        });
+
+        // Adiciona event listeners para os botões de exclusão
+        document.querySelectorAll('.delete-suggestion-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const suggestionIdToDelete = parseInt(event.currentTarget.dataset.id);
+                deleteSuggestion(suggestionIdToDelete);
+            });
+        });
+    }
+
+    // Função para deletar uma sugestão
+    function deleteSuggestion(id) {
+        if (!confirm('Tem certeza que deseja excluir este recado? Esta ação não pode ser desfeita.')) {
+            return; // Se o usuário cancelar, não faz nada
+        }
+
+        const storedSuggestions = localStorage.getItem(LOCAL_STORAGE_KEY);
+        let existingSuggestions = storedSuggestions ? JSON.parse(storedSuggestions) : [];
+
+        // Filtra a sugestão a ser removida
+        const updatedSuggestions = existingSuggestions.filter(sug => sug.id !== id);
+
+        // Salva a nova lista no Local Storage
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedSuggestions));
+
+        // Recarrega as sugestões para atualizar a exibição
+        loadSuggestionsFromLocalStorage();
+    }
+
+    // Event Listener para enviar nova sugestão para o Local Storage
+    addSuggestionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        formStatusMessage.textContent = 'Enviando...';
+        formStatusMessage.style.color = 'var(--text-color-secondary)';
+
+        const name = suggestionNameInput.value.trim();
+        const suggestionText = suggestionTextInput.value.trim();
+
+        if (!suggestionText) {
+            formStatusMessage.textContent = 'Por favor, escreva seu recado.';
+            formStatusMessage.style.color = 'var(--accent-color)';
+            return;
+        }
+
+        const newSuggestion = {
+            id: Date.now(), // ID único baseado no timestamp
+            name: name === '' ? 'Anônimo' : name,
+            suggestion: suggestionText,
+            timestamp: new Date().toISOString()
+        };
+
+        // Pega as sugestões atuais, adiciona a nova e salva
+        const existingSuggestions = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+        existingSuggestions.push(newSuggestion);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existingSuggestions));
+
+        formStatusMessage.textContent = 'Seu recado foi salvo no seu navegador!';
+        formStatusMessage.style.color = 'var(--primary-color)';
+        
+        suggestionNameInput.value = '';
+        suggestionTextInput.value = '';
+        loadSuggestionsFromLocalStorage(); // Recarrega a lista para o usuário ver a dele
+    });
+
+    // Carrega as sugestões ao iniciar
+    loadSuggestionsFromLocalStorage();
+
+});
